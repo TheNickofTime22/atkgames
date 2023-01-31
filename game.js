@@ -8,9 +8,9 @@ var titleScene = new TitleScene();
 
 //* Game scene */
 var config = {
-  type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
 };
 var game = new Phaser.Game(config);
 
