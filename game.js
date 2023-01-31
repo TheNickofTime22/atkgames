@@ -1,22 +1,24 @@
-import TitleScene from './titleScene.js';
-import GameScene from './gameScene.js';
+import GameScene from "./gameScene";
+import TitleScene from "./titleScene";
 
-// Our game scene
+// Our game scenes
 var gameScene = new GameScene();
 var titleScene = new TitleScene();
 
-
-//* Game scene */
+// * Game Scene * // 
 var config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
+
 };
+
+// Our game Object
 var game = new Phaser.Game(config);
 
-// load scenes
+// Add both scenes (it does not start them)
 game.scene.add('titleScene', titleScene);
 game.scene.add("game", gameScene);
 
-// start title
+// Start the title scene
 game.scene.start('titleScene');
