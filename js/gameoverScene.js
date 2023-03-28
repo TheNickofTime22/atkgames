@@ -1,3 +1,5 @@
+var score;
+
 class GameoverScene extends Phaser.Scene {
 
 
@@ -28,6 +30,7 @@ class GameoverScene extends Phaser.Scene {
         //endless_mode.on('pointerdown', () => this.clickButton());
         play_again.on('pointerdown', () => this.clickButton());
     }
+    
 
 
     clickButton() {
