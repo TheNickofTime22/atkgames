@@ -3,7 +3,11 @@ import { BaseBlock } from './BaseBlock.js';
 
 
 var block_container;
+var red_block_container;
+
 var main_container;
+var red_main_container;
+
 var debugText;
 var cursorXYText;
 var lineRow;
@@ -15,7 +19,12 @@ var main_container_blockLevel;
 var boxcursorRect;
 var block_containerRiseSpeed = 0.015;
 var block_containerSpeed = 0.015;
+
+
 var block_containerChildren;
+var red_block_containerChildren;
+
+
 var delay = 0;
 
 var nameIncrement = 0;
@@ -35,7 +44,7 @@ var blockColors = ["gold_block", "red_block", "blue_block", "green_block", "oran
 
 
 // Game rules
-var numRows = 6;
+var numRows;
 var left, right, up, down, swap, bugR, bugE, remove, speedUpBtn;
 
 
@@ -68,12 +77,12 @@ var thisScene;
 // }
 
 
-class GameScene extends Phaser.Scene {
+class DuoGameScene extends Phaser.Scene {
 
-	
+
 
 	constructor() {
-		super({ key: 'gameScene' });
+		super({ key: 'duoGameScene' });
 
 
 	}
@@ -90,12 +99,15 @@ class GameScene extends Phaser.Scene {
 
 
 		numRows = 14;
-		main_container_blockLevel = 3;
+		main_container_blockLevel = 4;
 
 
 
 
 		block_containerChildren = [];
+        red_block_containerChildren = [];
+
+
 		debugText;
 
 		game_speed_display;
@@ -110,7 +122,7 @@ class GameScene extends Phaser.Scene {
 		//
 
 		//MODE
-		timer = data.timer;
+		//timer = data.timer;
 		//
 		FIRST_ROW_OF_NULLS = [];
 
@@ -126,39 +138,45 @@ class GameScene extends Phaser.Scene {
 		}
 
 		game_speed_display = "<< " + game_speed.toFixed(2) + " >>"; // current game speed
+
 		block_container;
 		main_container;
+
+
+        red_block_container;
+		red_main_container;
+
+
 		lineRow = numRows;
 	};
 
 	preload() {
-		this.load.image('cursor', '/resources/img/cursor.png');
-		this.load.image('white_background', '/resources/img/white_background.png');
-		this.load.image('gold_block', '/resources/img/gold_block_lg.png');
-		this.load.image('red_block', '/resources/img/red_block_lg.png');
-		this.load.image('blue_block', '/resources/img/blue_block_lg.png');
-		this.load.image('indigo_block', '/resources/img/indigo_block_lg.png');
-		this.load.image('purple_block', '/resources/img/purple_block_lg.png');
-		this.load.image('pink_block', '/resources/img/pink_block_lg.png');
-		this.load.image('green_block', '/resources/img/green_block_lg.png');
-		this.load.image('orange_block', '/resources/img/orange_block_lg.png');
-		this.load.image('testPlus', '/resources/img/testPlus.png');
-		this.load.image('blueBorder', '/resources/img/blueborder.png');
-		this.load.image('black_block', '/resources/img/black_block_lg.png');
-		this.load.image('null_block', '/resources/img/testPlus.png');
-		this.load.image('score_board', '/resources/img/scoreborder.png');
-		this.load.image('bomb_block', '/resources/img/bomb_block_lg.png');
+		this.load.image('cursor', '/img/cursor.png');
+		this.load.image('white_background', '/img/white_background.png');
+		this.load.image('gold_block', '/img/gold_block_lg.png');
+		this.load.image('red_block', '/img/red_block_lg.png');
+		this.load.image('blue_block', '/img/blue_block_lg.png');
+		this.load.image('indigo_block', '/img/indigo_block_lg.png');
+		this.load.image('purple_block', '/img/purple_block_lg.png');
+		this.load.image('pink_block', '/img/pink_block_lg.png');
+		this.load.image('green_block', '/img/green_block_lg.png');
+		this.load.image('orange_block', '/img/orange_block_lg.png');
+		this.load.image('testPlus', '/img/testPlus.png');
+		this.load.image('blueBorder', '/img/blueborder.png');
+        this.load.image('redBorder', '/img/redborder.png');
+		this.load.image('black_block', '/img/black_block_lg.png');
+		this.load.image('null_block', '/img/testPlus.png');
+		this.load.image('score_board', '/img/scoreborder.png');
+		this.load.image('bomb_block', '/img/bomb_block_lg.png');
 
-		this.load.atlas('atlas', '/resources/img/block_atlas/base_blocks.png', '/resources/img/block_atlas/base_blocks.json');
+		this.load.atlas('atlas', '/img/block_atlas/base_blocks.png', '/img/block_atlas/base_blocks.json');
 	}
 
 
 
 	create() {
 
-		
 
-		block_containerChildren = [];
 		if (timer == true) {
 			//console.log('Timer Mode');
 			//console.log(timer);
@@ -166,7 +184,6 @@ class GameScene extends Phaser.Scene {
 			//console.log('Endless Mode');
 			//console.log(timer);
 		}
-
 		// add background and border
 		var bg = this.add.image(0, 0, 'white_background');
 		bg.setOrigin(0, 0);
@@ -174,21 +191,18 @@ class GameScene extends Phaser.Scene {
 		bg.displayHeight = this.sys.canvas.height;
 		// -------------------------
 
-
-		// TESTING SQUARE 
+		// TESTING SQUARE
 		//var testPlus = this.add.image(0.5, 0.5, "testPlus").setScale(4);
 		// ---------------
 
 		// Add block_container, position origin at cent of screen offset -210
 
-
-
-
-		block_container = this.add.container((screen.width / 2) - 210, screen.height / 2 + 215);
-
-
+		block_container = this.add.container((screen.width / 4) - 210, screen.height / 2 + 215);
 		const block = new BaseBlock(this, 200, 200, 'red_block');
-		block.shake();
+		block.spinToDisappear();
+
+        console.log(block.scaleX, block.scaleY);
+        console.log(block.visible);
 		// ------------------------------------------------------------
 
 		// Make the grid of blocks based off of the numRows variable. Add to block_container
@@ -205,28 +219,49 @@ class GameScene extends Phaser.Scene {
 		main_container = this.add.container(0, 0);
 		main_container.add(block_container);
 
+
 		// Add blue bordered game boundry
-		var grid_box = this.add.container(screen.width / 2, (screen.height / 2))
-
+		var grid_box = this.add.container(screen.width / 4, (screen.height / 2))
 		grid_box.add([this.add.image(0, 10, "blueBorder")]);
+		this.add.text(240, -20, "_______________", { font: '92px Bernard', fill: '#000000' });
 
-		this.add.text(710, -20, "_______________", { font: '92px Bernard', fill: '#000000' });
 
 
+        // (#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@)
+
+        red_block_container = this.add.container((screen.width / 1.5) + 111, screen.height / 2 + 215);
+		//const block = new BaseBlock(this, 200, 200, 'red_block');
+		//block.shake();
+		// ------------------------------------------------------------
+
+		// Make the grid of blocks based off of the numRows variable. Add to block_container
+		this.makeGrid(numRows).forEach(element => {
+			for (let index = 0; index < element.length; index++) {
+				red_block_containerChildren.push(element[index])
+			}
+		});
+
+
+		// ----------------------------------------------------------------------------
+
+		red_block_container.add(red_block_containerChildren);
+		red_main_container = this.add.container(0, 0);
+		red_main_container.add(red_block_container);
+
+
+        var red_grid_box = this.add.container(screen.width / 1.2, (screen.height / 2))
+		red_grid_box.add([this.add.image(0, 10, "redBorder")]);
+		this.add.text(240, -20, "_______________", { font: '92px Bernard', fill: '#000000' });
+        // (#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@)
 
 
 		// --------------------------------
 
-		// scoreboard 
+		// scoreboard
 
 
-		var score_box = this.add.container(screen.width / 1.31, (screen.height / 2.55));
-
-
+		var score_box = this.add.container(screen.width / 1.97, (screen.height / 2.55));
 		score_box.add([this.add.image(0, 0, "score_board")]);
-
-
-
 
 		score_box.add(this.add.text(-30, -300, 'Time', { font: '32px Bernard', fill: '#000000' }));
 		score_box.add(time_display = this.add.text(-40, -250, ':: ' + game_time_display + ' ::', { font: '32px Bernard', fill: '#000000' }));
@@ -251,8 +286,6 @@ class GameScene extends Phaser.Scene {
 
 		debugText = this.add.text(0, 400, 'testing', { font: '32px Bernard', fill: '#000000' });
 
-
-
 		// --------------------------------
 
 		// Make debug text in top left
@@ -260,7 +293,7 @@ class GameScene extends Phaser.Scene {
 		// --------------------------
 
 
-		// Create keybindings 
+		// Create keybindings
 		left = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
 		right = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 		up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -276,7 +309,7 @@ class GameScene extends Phaser.Scene {
 		boxCursor = this.add.sprite(0, 0, 'cursor');
 		boxCursor.setName('BoxCursor');
 		main_container.add(boxCursor);
-		boxCursor.setPosition(960, 755);
+		boxCursor.setPosition(480, 755);
 		boxCursor.setScale(1.1);
 		//------------------------------
 
@@ -291,17 +324,14 @@ class GameScene extends Phaser.Scene {
 		// 	element.setInteractive();
 		// })
 
-		// block_container.getAll().forEach(element => {
-		// 	element.setInteractive();
-		// });
-
-
-
+		block_container.getAll().forEach(element => {
+			element.setInteractive();
+		});
 
 	}
 
 	update(time, delta) {
-		// update text 
+		// update text
 		let deltaTime = (0.001 * delta);
 		let fixedTime = deltaTime;
 		timer_seconds += (fixedTime);
@@ -328,7 +358,7 @@ class GameScene extends Phaser.Scene {
 
 
 
-		main_container_blockLevel
+
 		this.adjustLevel();
 		// ------------
 
@@ -352,14 +382,15 @@ class GameScene extends Phaser.Scene {
 
 
 		// Update and listen for directional cursor movement
-		if (Phaser.Input.Keyboard.JustDown(left) && boxcursorRect.x > 726) {
+		if (Phaser.Input.Keyboard.JustDown(left) && boxcursorRect.x > 248) {
 			boxCursor.x -= 60;
 			this.shiftFocus('left');
 			//console.log("input--l");
 
-		} else if (Phaser.Input.Keyboard.JustDown(right) && boxcursorRect.x < 1080) {
+		} else if (Phaser.Input.Keyboard.JustDown(right) && boxcursorRect.x < 600) {
 			boxCursor.x += 60;
 			this.shiftFocus('right');
+
 			//console.log("input--r");
 		}
 
@@ -394,8 +425,9 @@ class GameScene extends Phaser.Scene {
 		}
 		if (Phaser.Input.Keyboard.JustDown(speedUpBtn)) {
 			// block_container.remove(primaryBlock);
-			block_containerSpeed += 0.05;
-
+			//block_containerSpeed += 0.05;
+            console.log(boxcursorRect.x);
+            console.log(boxcursorRect.y);
 
 
 
@@ -420,7 +452,7 @@ class GameScene extends Phaser.Scene {
 		}
 
 		if (Phaser.Input.Keyboard.JustDown(bugR)) {
-			console.log(block_container.getAt(0).y);
+			console.log(primaryBlock.getData('color'));
 
 		}
 
@@ -432,21 +464,21 @@ class GameScene extends Phaser.Scene {
 		//------------------------------------------------------------
 
 		/*
-		  ______  __    __   _______   ______  __  ___                              
-		 /      ||  |  |  | |   ____| /      ||  |/  /                              
-		|  ,----'|  |__|  | |  |__   |  ,----'|  '  /                               
-		|  |     |   __   | |   __|  |  |     |    <                                
-		|  `----.|  |  |  | |  |____ |  `----.|  .  \                               
-		 \______||__|  |__| |_______| \______||__|\__\                              
-		
+		  ______  __    __   _______   ______  __  ___
+		 /      ||  |  |  | |   ____| /      ||  |/  /
+		|  ,----'|  |__|  | |  |__   |  ,----'|  '  /
+		|  |     |   __   | |   __|  |  |     |    <
+		|  `----.|  |  |  | |  |____ |  `----.|  .  \
+		 \______||__|  |__| |_______| \______||__|\__\
+
 		.___  ___.      ___   .___________.  ______  __    __   _______     _______.
 		|   \/   |     /   \  |           | /      ||  |  |  | |   ____|   /       |
 		|  \  /  |    /  ^  \ `---|  |----`|  ,----'|  |__|  | |  |__     |   (----`
-		|  |\/|  |   /  /_\  \    |  |     |  |     |   __   | |   __|     \   \    
-		|  |  |  |  /  _____  \   |  |     |  `----.|  |  |  | |  |____.----)   |   
-		|__|  |__| /__/     \__\  |__|      \______||__|  |__| |_______|_______/    
-		
-		
+		|  |\/|  |   /  /_\  \    |  |     |  |     |   __   | |   __|     \   \
+		|  |  |  |  /  _____  \   |  |     |  `----.|  |  |  | |  |____.----)   |
+		|__|  |__| /__/     \__\  |__|      \______||__|  |__| |_______|_______/
+
+
 		*/
 		// block_container.iterate(checkVertMatch());
 
@@ -463,10 +495,14 @@ class GameScene extends Phaser.Scene {
 		main_container.y = (0 - block_containerRiseSpeed);
 
 
-		if (main_container.getBounds().y <= 68) {
+		if (block_container.getBounds().y <= 68) {
 
 			thisScene.start('gameoverScene', { score: !this.score_display });
 		}
+
+        // if ((block_container.getAt((main_container_blockLevel * 8) - 1).getBounds().y) > 880){
+
+        // }
 
 
 
@@ -475,14 +511,15 @@ class GameScene extends Phaser.Scene {
 
 		if ((time % 60) == 0) {
 			this.bubbleUpNull();
-			this.matchof4Vert();
-			this.matchof4Hori();
+			//this.matchof4Vert();
+			//this.matchof4Hori();
+
 			this.matchOf3Vert();
 			this.matchOf3Hori();
 			this.eliminateRow();
 			score_display.setText(game_score_display);
 		}
-		// if (delay == 100){	
+		// if (delay == 100){
 
 		// 	//this.eliminateRow();
 
@@ -552,9 +589,16 @@ class GameScene extends Phaser.Scene {
 				let color = block1.getData('color');
 
 				if ((block1 != null && block2 != null && block3 != null) && (block1.getData('color') == color && block2.getData('color') == color && block3.getData('color') == color) && color != 'null_block') {
-					block1.setData('color', 'null_block');
+
+                    block1.setData('color', 'null_block');
 					block2.setData('color', 'null_block');
 					block3.setData('color', 'null_block');
+
+                    block1.spinToDisappear();
+                    block2.spinToDisappear();
+                    block3.spinToDisappear();
+
+
 
 					block1.setTexture('null_block');
 					block2.setTexture('null_block');
@@ -678,7 +722,7 @@ class GameScene extends Phaser.Scene {
 		if (this.checkFirstRowEliminated()) {
 
 			block_container.removeBetween(0, 8, true);
-			this.addRow();
+            this.addRow();
 			//main_container.y -= 60;
 		}
 
@@ -796,11 +840,10 @@ class GameScene extends Phaser.Scene {
 		blockColors = this.shuffle(blockColors);
 
 		for (let index = 0; index < 8; index++) {
-			masterSprite = this.add.sprite((index * 60), (0 + increment), blockColors[index]);
-
-			masterSprite.setName('Block' + (nameIncrement) + "-" + index);
-			masterSprite.setData({ color: blockColors[index], x: nameIncrement, y: index })
-			results.push(masterSprite);
+			const baseBlock = new BaseBlock(this, index * 60, increment, blockColors[index]);
+            baseBlock.setName('Block' + (nameIncrement) + "-" + index);
+            baseBlock.setData({ color: blockColors[index], x: nameIncrement, y: index });
+            results.push(baseBlock);
 
 		}
 		nameIncrement += 1;
@@ -810,18 +853,18 @@ class GameScene extends Phaser.Scene {
 	/*
 	makeRow(increment) {
 		const results = [];
-		
+
 		let blocks = ["gold_block", "red_block", "blue_block", "green_block", "orange_block", "pink_block", "purple_block", "black_block"];
 		let masterSprite = this.add.sprite(0,0,"testPlus");
-		
-	
+
+
 		blocks = this.shuffle(blocks);
 		for (let index = 0; index < 8; index++) {
 			masterSprite = this.add.sprite((index*60), (0+increment), blocks[index]);
 			masterSprite.setName('Block'+(nameIncrement)+"-"+index);
 			masterSprite.setData('color', blocks[index])
 			results.push(masterSprite);
-			
+
 		}
 		nameIncrement+=1;
 		return results;
@@ -882,8 +925,8 @@ class GameScene extends Phaser.Scene {
 		}
 	}
 
-	
+
 
 }
 
-export default GameScene;
+export default DuoGameScene;
