@@ -11,6 +11,7 @@
                     <div class="text-center" id="gameDiv" style="border: 3px solid red;">
                         <script type="module" src="{{ asset('js/game.js')}}"></script>
                     </div>
+                    <h1>Test</h1>
                 </div>
             </div>
         </div>
