@@ -16,7 +16,6 @@ return new class extends Migration
             $table->integer('user_id');
             $table->string('GameMode');
             $table->integer('score');
-            $table->integer('daysSince');
             $table->timestamps();
         });
     }

@@ -87,6 +87,7 @@
                             </thead>
                             <tbody>
 
+                                @if($scores != null)
                                 @foreach ($scores as $score)
                                 <tr>
                                     <td>
@@ -109,6 +110,7 @@
 
                                 </tr>
                                 @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -125,6 +127,7 @@
                         <table class="table table-hover table-nowrap">
 
                             <tbody>
+                                @if($friends != null)
                                 @foreach($friends as $friend)
                                 <tr>
                                     <td>
@@ -147,6 +150,7 @@
 
                                 </tr>
                                 @endforeach
+                                @endif
 
 
                             </tbody>

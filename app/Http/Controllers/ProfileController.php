@@ -14,8 +14,17 @@ class ProfileController extends Controller
     public function index(){
 
         $user = Auth::user();
-        $scores = $user->scores;
-        $friends = $user->friends;
+        if($user->scores != null ){
+            $scores = $user->scores;
+        } else {
+            $scores = null;
+        }
+
+        if($user->friends != null){
+            $friends = $user->friends;
+        } else {
+            $friends = null;
+        }
 
         return view('profile', ['scores' => $scores, 'friends' => $friends]);
     }

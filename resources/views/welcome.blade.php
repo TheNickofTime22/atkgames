@@ -8,10 +8,15 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-9">
-                    <div class="text-center" id="gameDiv" style="border: 3px solid red;">
-                        <script type="module" src="{{ asset('js/game.js')}}"></script>
+                    <div class="text-center" id="gameDiv" >
+                        @if(Auth::user() != true)
+                        <script type="module" src="{{ asset('js/launch/launchGuestGame.js')}}"></script>
+                            @else
+
+                            <script type="module" src="{{ asset('js/launch/launchAuthGame.js') }}"></script>
+                        @endif
                     </div>
-                    <h1>Upload on pull from github</h1>
+
                 </div>
             </div>
         </div>

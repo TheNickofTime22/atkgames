@@ -26,6 +26,8 @@ Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])
 
 Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'store'])->name('store');
 
+Route::get('/getUser', [App\Http\Controllers\HomeController::class, 'getUser'])->name('getUser');
 
+Route::post('/scores', [App\Http\Controllers\HomeController::class, 'saveScore'])->name('scores');
 
 //Route::get('/login', [App\Http\Controllers\HomeController::class, 'login'])->name('login');

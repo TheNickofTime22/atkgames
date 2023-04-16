@@ -11,6 +11,13 @@ class Scores extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'GameMode',
+        'score'
+
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

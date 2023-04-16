@@ -22,7 +22,6 @@ class ScoresFactory extends Factory
             'user_id' => 1,
             'gameMode' => 'Endless Mode',
             'score' =>fake()->numberBetween(200, 5000),
-            'daysSince' =>fake()->numberBetween(1, 7),
 
         ];
     }

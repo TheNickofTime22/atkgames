@@ -10,15 +10,17 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
 
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+    {{-- <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" /> --}}
 
+    <!-- Boostrap cdn -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 
+        <!-- Custom Css -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
 
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body class="antialiased" style="background-color:black">
@@ -79,6 +81,7 @@
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
+                                    @method('POST')
                                 </form>
                             </div>
 
@@ -105,7 +108,11 @@
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/gh/SilverTree7622/Phaser3_GUI_Inspector@latest/dist/PGInspector.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js">
+    </script>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    <script src="//cdn.ably.io/lib/ably.min-1.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"
         integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>

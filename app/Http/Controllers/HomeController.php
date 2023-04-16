@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Scores;
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -28,6 +31,29 @@ class HomeController extends Controller
 
     public function profile(){
         return view('profile');
+    }
+
+    public function getUser() {
+
+        $user = Auth::user();
+        return $user;
+    }
+
+    public function saveScore(Request $request) {
+        $userId = $request->input('user_id');
+        $gameMode = $request->input('GameMode');
+        $score = $request->input('score');
+
+        $score = new Scores([
+            'user_id' => $userId,
+            'GameMode' => $gameMode,
+            'score' => $score,
+        ]);
+
+
+        $score->save();
+
+        return response()->json(['message' => 'Score saved successfully!']);
     }
 
 
