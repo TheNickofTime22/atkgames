@@ -234,6 +234,7 @@ class MultiplayerGameScene extends Phaser.Scene {
 
         this.currentMatch.subscribe((message) => {
             if (message.name === 'player-keypress' && message.data.user.id !== this.user.id) {
+                console.log('keypress');
                 switch (message.data.key) {
                     case 'left':
                         self.shiftFocus('left', boxCursor2)

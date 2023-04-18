@@ -6,7 +6,6 @@ export default class LobbyScene extends Phaser.Scene {
         super({ key: 'lobbyScene' });
         this.user = config.user;
         this.ably = config.ably;
-        this.lobbyChannel;
         this.controllerChannel = this.ably.channels.get('configChannel');
     }
 
@@ -63,7 +62,7 @@ export default class LobbyScene extends Phaser.Scene {
         const randomSeed = this.generateRandomString(20);
         const generated_LOBBYNAME = this.user.id + randomString;
         this.add.bitmapText(300, 50, 'smooth', "You are hosting a lobby")
-        this.lobbyChannel = this.ably.channels.get(generated_LOBBYNAME, { presence: true, state: true });
+
 
         // listen for the host being created
         // ------1b------
@@ -98,7 +97,7 @@ export default class LobbyScene extends Phaser.Scene {
             console.log('Gotcha ' + message.data.user.screenname);
             randomSeed = message.data.rngSeed;
             channelName = message.data.channelName;
-            this.lobbyChannel = this.ably.channels.get(message.data.channelName, { presence: true, state: true });
+
             // ------3a------
             this.controllerChannel.publish('Gotcha-joining-now', { user: this.user });
         })
