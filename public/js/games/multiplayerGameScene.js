@@ -93,7 +93,7 @@ class MultiplayerGameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'multiplayerGameScene' });
         this.ably = new Ably.Realtime("Jn3neg.6ORxrw:51njAEu0j3jTkoTwascniu_bvpsIMQOpjfmbtyijZWA");
-        this.channel = this.ably.channels.get('multiplayerSession');
+
         this.user;
 
 
@@ -101,8 +101,11 @@ class MultiplayerGameScene extends Phaser.Scene {
 
     init(data) {
         this.user = data.user;
+        this.channelName = data.channelName;
+        this.rngSeed = data.rngSeed;
 
 
+        this.currentMatch = this.ably.channels.get(this.channelName, { presence: true, state: true });
         block_containerRiseSpeed = 0.005;
         nameIncrement = 0;
         primaryBlockIndex = [0, 3];
@@ -161,7 +164,7 @@ class MultiplayerGameScene extends Phaser.Scene {
         lineRow = numRows;
         red_lineRow = numRows;
         self = this;
-        rngSeedSource = "potatoe";
+        rngSeedSource = this.rngSeed;
         //RowRngOffset = 1;
         red_RNG = new Math.seedrandom(rngSeedSource);
         blue_RNG = new Math.seedrandom(rngSeedSource);
@@ -216,12 +219,12 @@ class MultiplayerGameScene extends Phaser.Scene {
         blue_visible_blocks = this.add.group();
         red_visible_blocks = this.add.group();
 
-        this.channel.attach(function (err) {
+        this.currentMatch.attach(function (err) {
             if (err) {
                 console.log('Error attaching to channel:', err.message);
             } else {
                 console.log('Attached to channel');
-                this.channel.subscribe(function (message) {
+                this.currentMatch.subscribe((message) => {
                     console.log('Received message:', message.data);
                     // Handle message data
                 });
@@ -229,8 +232,8 @@ class MultiplayerGameScene extends Phaser.Scene {
         });
 
 
-        this.channel.subscribe(function (message) {
-            if (message.name === 'player-keypress' && message.data.user.id !== self.user.id) {
+        this.currentMatch.subscribe((message) => {
+            if (message.name === 'player-keypress' && message.data.user.id !== this.user.id) {
                 switch (message.data.key) {
                     case 'left':
                         self.shiftFocus('left', boxCursor2)
@@ -478,27 +481,27 @@ class MultiplayerGameScene extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(left) && boxcursorRect.x > 248) {
             //boxCursor.x -= 60;
             this.shiftFocus('left', boxCursor);
-            this.channel.publish('player-keypress', { user: this.user, key: 'left' });
+            this.currentMatch.publish('player-keypress', { user: this.user, key: 'left' });
 
 
 
         } else if (Phaser.Input.Keyboard.JustDown(right) && boxcursorRect.x < 600) {
             //boxCursor.x += 60;
             this.shiftFocus('right', boxCursor);
-            this.channel.publish('player-keypress', { user: this.user, key: 'right' });
+            this.currentMatch.publish('player-keypress', { user: this.user, key: 'right' });
 
         }
 
         if (Phaser.Input.Keyboard.JustDown(up) && boxcursorRect.y > 65) {
             //boxCursor.y -= 60;
             this.shiftFocus('up', boxCursor);
-            this.channel.publish('player-keypress', { user: this.user, key: 'up' });
+            this.currentMatch.publish('player-keypress', { user: this.user, key: 'up' });
 
 
         } else if (Phaser.Input.Keyboard.JustDown(down) && boxcursorRect.y < 842) {
             //boxCursor.y += 60;
             this.shiftFocus('down', boxCursor);
-            this.channel.publish('player-keypress', { user: this.user, key: 'down' });
+            this.currentMatch.publish('player-keypress', { user: this.user, key: 'down' });
 
         }
 
@@ -519,7 +522,7 @@ class MultiplayerGameScene extends Phaser.Scene {
 
                 this.swapColors(primaryBlock, secondaryBlock);
             }
-            this.channel.publish('player-keypress', { user: this.user, key: 'space', primary: primaryBlock_2p, secondary: secondaryBlock_2p });
+            this.currentMatch.publish('player-keypress', { user: this.user, key: 'space', primary: primaryBlock_2p, secondary: secondaryBlock_2p });
 
 
 
