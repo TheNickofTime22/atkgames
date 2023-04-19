@@ -6,6 +6,13 @@ class BaseBlock extends Phaser.GameObjects.Sprite {
 
         scene.add.existing(this);
 
+        // Enable physics for this sprite
+        //scene.physics.world.enable(this);
+
+        // Add gravity to this sprite
+        //this.body.setGravityY(200);
+
+        // Set other properties as needed
         this.setInteractive();
         this.originalScaleX = this.scaleX;
         this.originalScaleY = this.scaleY;

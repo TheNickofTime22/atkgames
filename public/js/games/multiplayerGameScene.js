@@ -90,29 +90,23 @@ class MultiplayerGameScene extends Phaser.Scene {
 
 
 
-    constructor() {
+    constructor(config) {
         super({ key: 'multiplayerGameScene' });
-        this.ably = new Ably.Realtime("Jn3neg.6ORxrw:51njAEu0j3jTkoTwascniu_bvpsIMQOpjfmbtyijZWA");
-
-        this.user;
-
+        this.ably = config.ably;
+        this.user = config.user;
+        console.log('constructor has run')
 
     }
 
     init(data) {
         this.user = data.user;
-        this.channelName = data.channelName;
         this.rngSeed = data.rngSeed;
-
-
-        this.currentMatch = this.ably.channels.get(this.channelName, { presence: true, state: true });
-        block_containerRiseSpeed = 0.005;
+        this.currentMatch = this.ably.channels.get(data.channelName);
+        console.log('currentMatch is made with channelname')
+        block_containerRiseSpeed = 0.000005;
         nameIncrement = 0;
         primaryBlockIndex = [0, 3];
         secondaryBlockIndex = [primaryBlockIndex[0], primaryBlockIndex[1] + 1];
-
-
-
 
         numRows = 8;
         main_container_blockLevel = 4;
@@ -202,65 +196,42 @@ class MultiplayerGameScene extends Phaser.Scene {
 
 
     create() {
-        // let arrayblue = [];
-        // let value;
-        // let counter_1 = 0;
-        // while(true){
-        //     if (blue_RNG() == 0.9098118737960076){
-        //         break;
-        //     } else {
-        //         blue_RNG();
-        //         counter_1 +=1;
-        //     }
-        // }
 
-        //console.log(counter_1);
 
         blue_visible_blocks = this.add.group();
         red_visible_blocks = this.add.group();
 
-        this.currentMatch.attach(function (err) {
-            if (err) {
-                console.log('Error attaching to channel:', err.message);
-            } else {
-                console.log('Attached to channel');
-                this.currentMatch.subscribe((message) => {
-                    console.log('Received message:', message.data);
-                    // Handle message data
-                });
+
+
+        console.log('PRE-subscribe event:');
+        this.currentMatch.subscribe('player-keypress', (message) => {
+            console.log('------player-keypress heard something-------')
+        if(message.data.user.id != this.user.id){
+            switch (message.data.key) {
+                case 'left':
+                    console.log('leftPress;')
+                    this.shiftFocus('left', boxCursor2)
+                    break;
+                case 'right':
+                    this.shiftFocus('right', boxCursor2)
+                    break;
+                case 'up':
+                    this.shiftFocus('up', boxCursor2)
+                    break;
+                case 'down':
+                    this.shiftFocus('down', boxCursor2)
+                    break;
+                case 'space':
+                    this.swapColors(primaryBlock_2p, secondaryBlock_2p)
+                    break;
+                case 'shift':
+                    //this.speedUp();
+                    break;
+                default:
+                    break;
             }
-        });
-
-
-        this.currentMatch.subscribe((message) => {
-            if (message.name === 'player-keypress' && message.data.user.id !== this.user.id) {
-                console.log('keypress');
-                switch (message.data.key) {
-                    case 'left':
-                        self.shiftFocus('left', boxCursor2)
-                        break;
-                    case 'right':
-                        self.shiftFocus('right', boxCursor2)
-                        break;
-                    case 'up':
-                        self.shiftFocus('up', boxCursor2)
-                        break;
-                    case 'down':
-
-                        self.shiftFocus('down', boxCursor2)
-                        break;
-                    case 'space':
-                        self.swapColors(primaryBlock_2p, secondaryBlock_2p)
-                        break;
-                    case 'shift':
-                        //this.speedUp();
-                        break;
-                    default:
-                        break;
-                }
-
-            }
-        });
+        }
+    });
 
 
 
@@ -315,7 +286,7 @@ class MultiplayerGameScene extends Phaser.Scene {
         // --------------------------------
         red_block_container.each(sprite => {
             if (sprite.y < 780) {
-                blue_visible_blocks.add(sprite);
+                red_visible_blocks.add(sprite);
                 sprite.setAlpha(1);
             }
         });
@@ -323,7 +294,7 @@ class MultiplayerGameScene extends Phaser.Scene {
 
         block_container.each(sprite => {
             if (sprite.y < 780) {
-                red_visible_blocks.add(sprite);
+                blue_visible_blocks.add(sprite);
                 sprite.setAlpha(1);
             }
         });
@@ -436,7 +407,7 @@ class MultiplayerGameScene extends Phaser.Scene {
         } else if (timer_seconds.toFixed(2) % 5 == 0) {
             block_containerSpeed += 0.001;
 
-            game_speed += 0.1
+            game_speed += 0.0001
             speed_display.setText("<< " + game_speed + " >>");
         }
         time_display.setText(timer_hours + ":0" + timer_min + ":" + timer_seconds.toFixed(1));
@@ -481,7 +452,9 @@ class MultiplayerGameScene extends Phaser.Scene {
         // Update and listen for directional cursor movement
         if (Phaser.Input.Keyboard.JustDown(left) && boxcursorRect.x > 248) {
             //boxCursor.x -= 60;
+            console.log('shiftFocus boxCursor, left')
             this.shiftFocus('left', boxCursor);
+            console.log('player-keypress PUBLISH left')
             this.currentMatch.publish('player-keypress', { user: this.user, key: 'left' });
 
 
@@ -594,8 +567,8 @@ class MultiplayerGameScene extends Phaser.Scene {
         // SPEED CONTROL
         block_containerRiseSpeed += (block_containerSpeed * delta);
 
-        main_container.y = (0 - block_containerRiseSpeed);
-        red_main_container.y = (0 - block_containerRiseSpeed);
+        //main_container.y = (0 - block_containerRiseSpeed);
+        //red_main_container.y = (0 - block_containerRiseSpeed);
 
 
         if (block_container.getBounds().y <= 68) {
@@ -669,26 +642,36 @@ class MultiplayerGameScene extends Phaser.Scene {
 
     bubbleUpNull() {
         try {
-            for (let row = 0; row < numRows - 1; row++) {
-                for (let column = 0; column < 8; column++) {
 
-                    let top = (8 * row) + column
-                    let bot = (8 * (row + 1)) + column
+            red_visible_blocks.forEach(block => {
+                let first_position = [block.x, block.y];
+                console.log(first_position)
 
-                    let block1 = block_container.getAt(top);
-                    //console.log(block1)
-                    let block2 = block_container.getAt(bot);
+            });
+            // for (let row = 0; row < numRows - 1; row++) {
+            //     for (let column = 0; column < 8; column++) {
 
+            //         let top = (8 * row) + column
+            //         let bot = (8 * (row + 1)) + column
 
-                    //console.log(block2)
+            //         let block1 = block_container.getAt(top);
+            //         //console.log(block1)
+            //         let block2 = block_container.getAt(bot);
 
-                    if (block2.getData('color') == 'null_block' && block1.getData('color') != 'null_block') {
+            //         let red_block1 = red_block_container.getAt(top);
+            //         //console.log(block1)
+            //         let red_block2 = red_block_container.getAt(bot);
 
-                        this.swapColors(block1, block2);
-                        //this.setAlphaOnBlock(block1, block2)
-                    }
-                }
-            }
+            //         //console.log(block2)
+
+            //         if (block2.getData('color') == 'null_block' && block1.getData('color') != 'null_block') {
+            //             this.swapColors(block1, block2);
+            //         }
+            //         if (red_block2.getData('color') == 'null_block' && red_block1.getData('color') != 'null_block') {
+            //             this.swapColors(red_block1, red_block2);
+            //         }
+            //     }
+            // }
         } catch (error) {
             return;
         }
@@ -923,7 +906,9 @@ class MultiplayerGameScene extends Phaser.Scene {
 
         if (cursor == boxCursor) {
             switch (direction) {
+
                 case 'left':
+                    console.log('cursor1 moves left');
                     boxCursor.x -= 60;
                     primaryBlockIndex[1] -= 1;
                     break;
@@ -943,6 +928,7 @@ class MultiplayerGameScene extends Phaser.Scene {
         } else {
             switch (direction) {
                 case 'left':
+                    console.log('cursor2 moves left');
                     boxCursor2.x -= 60;
                     primaryBlockIndex_2p[1] -= 1;
                     break;

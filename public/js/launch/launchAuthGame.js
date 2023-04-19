@@ -4,7 +4,7 @@ import GuestTitleScene from "../title/guestTitleScene.js";
 import GameoverScene from "../transitionScenes/gameoverScene.js";
 import AuthTitleScene from "../title/authTitleScene.js";
 import LobbyScene from "../transitionScenes/lobbyScene.js";
-import PreMatchScene from "../transitionScenes/preMatchScene.js";
+
 
 const xhr = new XMLHttpRequest();
 xhr.open("GET", "/getUser");
@@ -38,7 +38,7 @@ xhr.onload = () => {
         game.scene.add("authTitleScene", new AuthTitleScene(config));
         game.scene.add("multiplayerScene", new MultiplayerGameScene(config));
         game.scene.add("lobbyScene", new LobbyScene(config));
-        game.scene.add("preMatchScene", new PreMatchScene(config));
+
         // Start the title scene
         game.scene.start("authTitleScene");
     } else {

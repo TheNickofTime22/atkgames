@@ -60,7 +60,7 @@ export default class LobbyScene extends Phaser.Scene {
         // create the things the host needs to see.
         const randomString = this.generateRandomString(10);
         const randomSeed = this.generateRandomString(20);
-        const generated_LOBBYNAME = this.user.id + randomString;
+        const generated_LOBBYNAME = "generatedLobby:" + randomString;
         this.add.bitmapText(300, 50, 'smooth', "You are hosting a lobby")
 
 
@@ -81,7 +81,7 @@ export default class LobbyScene extends Phaser.Scene {
             console.log("Nice to play with you " + message.data.user.screenname + ". Lets start...");
             this.controllerChannel.publish('let-start-together', {user: this.user});
 
-            this.controllerChannel.publish('start-the-match', {user: this.user, channelName: generated_LOBBYNAME, rngSeed: randomSeed});
+            // this.controllerChannel.publish('start-the-match', {user: this.user, channelName: generated_LOBBYNAME, rngSeed: randomSeed});
         });
     }
 
@@ -104,9 +104,14 @@ export default class LobbyScene extends Phaser.Scene {
         // ------1a------
         this.controllerChannel.publish("I-wanna-join-a-host", { user: this.user });
         // listen for messages coming in when a user wants to join a match.
+
         this.controllerChannel.subscribe('let-start-together', (message) =>{
             console.log('okay, starting')
+
+
             this.controllerChannel.publish('start-the-match', { user:this.user, channelName: channelName, rngSeed: randomSeed })
+
+
         });
     }
 
