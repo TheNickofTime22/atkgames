@@ -3,18 +3,14 @@
 class BaseBlock extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, texture, frame) {
         super(scene, x, y, texture, frame);
-
         scene.add.existing(this);
 
-        // Enable physics for this sprite
 
-        // Set other properties as needed
         this.setInteractive();
         this.originalScaleX = this.scaleX;
         this.originalScaleY = this.scaleY;
         this.originalRotation = this.rotation;
-
-    }
+      }
 
 
     get texture() {

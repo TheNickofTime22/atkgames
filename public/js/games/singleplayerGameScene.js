@@ -133,7 +133,7 @@ class SingleplayerGameScene extends Phaser.Scene {
     }
 
     create() {
-        this.physics.start();
+
         blue_visible_blocks = this.add.group();
 
 
